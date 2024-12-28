@@ -1,4 +1,5 @@
 <?php
+
 require('./config.php');
 
 
@@ -119,6 +120,10 @@ class adminstrator
     {
         return $filmManager->addFilm($film);
     }
+    public function editFilm(FilmManager $filmManager, Film $film)
+    {
+        return $filmManager->editFilm($film);
+    }
 
 }
 
@@ -149,19 +154,43 @@ class filmManager
                     );
                     return $stmt->execute();
     }
+
+    public function editFilm(film $film)
+    {
+        $query = "UPDATE film
+                 set titre = ?, genre= ?, duree= ?, date_sortie = ?, realisateur = ?, distribution = ? where id= ?";
+        $stmt= $this->conn->prepare($query);
+        $stmt->bind_param(
+            "ssisssi",
+            $film->gettitre(),
+            $film->getgenre(),
+            $film->getduree(),
+            $film->getdate_sortie(), 
+            $film->getrealisateur(),   
+            $film->getdistribution(),  
+            $film->getid()             
+    );
+    return $stmt->execute();
+    }
 }
 
-$host = 'localhost';
-$db_name = 'root';
-$password = '';
-$conn = 'cinema';
-
-$conn = new mysqli($host, $db_name, $password, $conn);
+$db = new database();
+$conn = $db->connect();
 $filmManager = new filmManager($conn);
+
 $admin = new adminstrator(1, "Admin Name", "admin@example.com", "securepassword");
-$newFilm = new Film(null, "Inception", "Science Fiction", 148, "2010-07-16", "Christopher Nolan", "Leonardo DiCaprio, Joseph Gordon-Levitt");
-if ($admin->addFilm($filmManager, $newFilm)) {
-    echo "Film added successfully!";
+// $newFilm = new Film(null, "Inception", "Science Fiction", 148, "2010-07-16", "Christopher Nolan", "Leonardo DiCaprio, Joseph Gordon-Levitt");
+// if ($admin->addFilm($filmManager, $newFilm)) {
+//     echo "Film added successfully!";
+// } else {
+//     echo "Failed to add film.";
+// }
+
+
+$editedfilm = new film(3, "Inceptionnn", "action", 148, "2010-07-16", "Christopher Nolan", 
+"Leonardo DiCaprio", "Joseph Gordon-Levitt");
+if ($admin->editFilm($filmManager, $editedfilm)) {
+    echo "Film updated successfully!";
 } else {
-    echo "Failed to add film.";
+    echo "Failed to update film.";
 }
