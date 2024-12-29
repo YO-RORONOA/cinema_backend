@@ -125,6 +125,11 @@ class adminstrator
         return $filmManager->editFilm($film);
     }
 
+    public function deleteFilm(FilmManager $filmManager, Film $film)
+    {
+        return $filmManager->deleteFilm($film);
+    }
+
 }
 
 
@@ -172,6 +177,14 @@ class filmManager
     );
     return $stmt->execute();
     }
+
+    public function deleteFilm($id)
+    {
+        $query = "DELETE from film where id = ?";
+        $stmt= $this->conn->prepare($query);
+        $stmt->bind_param('i', $id);
+        return $stmt->exicute();
+    }
 }
 
 $db = new database();
@@ -179,12 +192,12 @@ $conn = $db->connect();
 $filmManager = new filmManager($conn);
 
 $admin = new adminstrator(1, "Admin Name", "admin@example.com", "securepassword");
-// $newFilm = new Film(null, "Inception", "Science Fiction", 148, "2010-07-16", "Christopher Nolan", "Leonardo DiCaprio, Joseph Gordon-Levitt");
-// if ($admin->addFilm($filmManager, $newFilm)) {
-//     echo "Film added successfully!";
-// } else {
-//     echo "Failed to add film.";
-// }
+$newFilm = new Film(null, "Inception", "Science Fiction", 148, "2010-07-16", "Christopher Nolan", "Leonardo DiCaprio, Joseph Gordon-Levitt");
+if ($admin->addFilm($filmManager, $newFilm)) {
+    echo "Film added successfully!";
+} else {
+    echo "Failed to add film.";
+}
 
 
 $editedfilm = new film(3, "Inceptionnn", "action", 148, "2010-07-16", "Christopher Nolan", 
